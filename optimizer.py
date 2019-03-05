@@ -82,7 +82,11 @@ def route(starting_location, ending_location):
 
 # PART 3 - GOING INTO PRODUCTION
 
+# Making the final fucntion that returns the optimal route
+def best_route(starting_location, intermediary_location, ending_location):
+    return route(starting_location, intermediary_location) \
+           + route(intermediary_location, ending_location)[1:]
 
 print('ROUTE:')
-print(route('E','G'))
+print(best_route('E','K','G'))
 
