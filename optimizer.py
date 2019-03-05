@@ -33,7 +33,7 @@ R = np.array([[0,1,0,0,0,0,0,0,0,0,0,0],
               [0,0,0,0,0,0,0,1,0,0,0,0],
               [0,0,0,0,0,0,0,0,1,0,0,0],
               [0,1,0,0,0,0,0,0,0,1,0,0],
-              [0,0,1,0,0,0,1000,1,0,0,0,0],
+              [0,0,1,0,0,0,1,1,0,0,0,0],
               [0,0,0,1,0,0,1,0,0,0,0,1],
               [0,0,0,0,1,0,0,0,0,1,0,0],
               [0,0,0,0,0,1,0,0,1,0,1,0],
@@ -45,36 +45,30 @@ R = np.array([[0,1,0,0,0,0,0,0,0,0,0,0],
 
 # PART 2 - BUILDING THE AI SOLUTION WITH Q-Learning
 
-# Initialiazing the Q-Values
-Q = np.array(np.zeros([12,12]))
-
-print('Initial Q-Values;')
-print(Q.astype(int))
-
-# Implementing the Q-Learing process
-for i in range(iterations):
-    current_state = np.random.randint(0,12)
-    playable_actions = []
-    for j in range(12):
-        if R[current_state, j] > 0:
-            playable_actions.append(j)
-    next_state = np.random.choice(playable_actions)
-    TD = R[current_state, next_state] + gamma * Q[next_state, np.argmax(Q[next_state,])] \
-         - Q[current_state, next_state]
-    Q[current_state, next_state] = Q[current_state, next_state] + alpha * TD
-
-print('Q-Values;')
-print(Q.astype(int))
-
-
-
-# PART 3 - GOING INTO PRODUCTION
-
 # Making  a mapping from the states to the locations
 state_to_location = { state: location for location, state in location_to_state.items() }
 
 # Making the final function that will return the optimal route
 def route(starting_location, ending_location):
+    R_new = np.copy(R)
+    ending_state = location_to_state[ending_location]
+    R_new[ending_state, ending_state] = 1000
+
+    # Initialiazing the Q-Values
+    Q = np.array(np.zeros([12,12]))
+
+    # Implementing the Q-Learing process
+    for i in range(iterations):
+        current_state = np.random.randint(0,12)
+        playable_actions = []
+        for j in range(12):
+            if R_new[current_state, j] > 0:
+                playable_actions.append(j)
+        next_state = np.random.choice(playable_actions)
+        TD = R_new[current_state, next_state] + gamma * Q[next_state, np.argmax(Q[next_state,])] \
+            - Q[current_state, next_state]
+        Q[current_state, next_state] = Q[current_state, next_state] + alpha * TD
+
     route = [starting_location]
     next_location = starting_location
     while (next_location != ending_location):
@@ -84,6 +78,10 @@ def route(starting_location, ending_location):
         route.append(next_location)
         starting_location = next_location
     return route
+
+
+# PART 3 - GOING INTO PRODUCTION
+
 
 print('ROUTE:')
 print(route('E','G'))
